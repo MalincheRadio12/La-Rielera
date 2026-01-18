@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Radio">
+    <link rel="apple-touch-icon" href="js/tren-de-juguete.png">
+    <meta name="msapplication-TileImage" content="js/tren-de-juguete.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <link rel="manifest" href="./manifest.json">
+    <title>La Rielera.!! 📻</title>
+    <link rel="shortcut icon" href="js/tren-de-juguete.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-size: 1.5vw;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #000000 url() bottom / cover no-repeat;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden; 
+            overflow-y: hidden;
+            background-attachment: fixed;
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #lunaradio {
+            width: 100%;
+            height: 100%;
+            margin: auto;
+            padding: 0;
+        }
+        
+        @font-face { 
+            font-family: 'GROBOLD';
+            src: url('js/GROBOLD.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        #reloj {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #f5f5f5;
+            font-family: 'GROBOLD', sans-serif;
+            text-align: center;
+            border-radius: 15px;
+            padding: 10px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            max-width: 20%;
+        }
+
+        .reloj-fecha {
+            font-size: 1vw;
+            font-weight: normal;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .reloj-hora {
+            font-size: 1.5vw;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            color: #0083FF;
+        }
+
+        @media (max-width: 768px) {
+            #reloj {
+                font-size: 2.5vw;
+                max-width: 70%;
+                padding: 10px 15px;
+            }
+
+            .reloj-fecha {
+                font-size: 3vw;
+            }
+
+            .reloj-hora {
+                font-size: 3vw;
+            }
+        }
+        
+        .emoji-button {
+            font-size: 20px;
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 20%;
+            background-color: #f3f3f3;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .emoji-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            left: 0px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .emoji-picker span {
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .emoji-picker span:hover {
+            transform: scale(1.2);
+        }
+
+        #comment-btn,
+        #info-btn,
+        #contact-btn {
+            position: fixed;
+            bottom: 2vh;
+            cursor: pointer;
+            z-index: 2;
+            font-size: 2vh;
+            padding: 2vh;
+            border-radius: 50%;
+            background-color: #0083FF;
+        }
+
+        @media (max-width: 100vh) {
+            body { 
+                font-size: 1vw;
+            }
+
+            #comment-btn,
+            #info-btn,
+            #contact-btn {
+                font-size:3vw;
+                padding: 1vw;
+            }
+        }
+
+        #comment-btn {
+            left: 2vw;
+            margin-right: 1px;
+        }
+
+        #info-btn {
+            left: 12vw;
+            margin-right: 1px;
+        }
+
+        #contact-btn {
+            left: 22vw;
+            margin-right: 1px;
+        }
+        
+        #comment-modal h2,
+        #info-modal h2,
+        #contact-modal h2 {
+            font-size: max(1.5vw, 20px);
+        }
+
+        #comment-modal,
+        #info-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to right, #0083FF, #ffffff);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            transition: opacity 0.5s ease-in-out;
+            max-width: 350px;
+            width: 90vw;
+        }
+        
+        #info-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #0083FF, #ffffff;
+            font-size: 18px;
+        }
+
+        #info-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #info-container::-webkit-scrollbar-thumb {
+            background-color: #0083FF;
+        }
+
+        #info-container::-webkit-scrollbar-track {
+            background-color: #ffffff;
+        }
+        
+        #contact-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to right, #0083FF, #ffffff);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            transition: opacity 0.5s ease-in-out;
+            width: 50vw;
+            max-width: 300px;
+        }
+        
+        #contact-container {
+            text-align: center;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        #comment-modal.show,
+        #info-modal.show,
+        #contact-modal.show {
+            display: block;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #comment-input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        #comments-container,
+        #info-container,
+        #contact-container {
+            max-height: 30vh;
+            overflow-y: auto;
+            margin-top: 2vh;
+            text-align: left;
+            font-size: 18px;
+        }
+
+        .comment-item,
+        .info-item,
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2vh;
+            padding: 2vh;
+            border: 1px solid #ccc;
+            border-radius: 1vh;
+        }
+
+        .delete-btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 1vh 2vw;
+            border: none;
+            border-radius: 1vh;
+            cursor: pointer;
+        }
+
+        .social-btn {
+            display: block;
+            margin-bottom: 1vh;
+            text-align: center;
+        }
+
+        #ad-images-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50%;
+        }
+
+        #ad-images {
+            text-align: center;
+        }
+
+        #ad-images img {
+            display: none;
+            max-width: 100%;
+            max-height: 100vh;
+        }
+
+        #ad-images img:first-child {
+            display: block;
+        }
+        
+        #imagen-esquina {
+            position: fixed;
+            top: 1px;
+            right: 1px;
+            z-index: 999;
+        }
+
+        #imagen-esquina img {
+            width: 70px;
+            height: auto;
+        }
+        
+        #contact-modal {
+            font-size: 16px;
+        }
+
+        #contact-modal p {
+            min-width: 50px;
+            font-size: max(16px, 2vw);
+        }
+
+        #offline-message h1 {
+            font-size: 7vw;
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+        }
+
+        #chat-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            transition: opacity 0.5s ease-in-out;
+            max-width: 350px;
+            width: 90vw;
+        }
+
+        #chat-modal.show {
+            display: block;
+        }
+
+        #chat-container {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #chat-messages {
+            max-height: 30vh;
+            overflow-y: auto;
+            margin-bottom: 2vh;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-input {
+            width: 70%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #send-chat-btn {
+            width: 25%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #send-chat-btn:hover {
+            background-color: #ff0000;
+        }
+
+        #chat-btn {
+            position: fixed;
+            bottom: 2vh;
+            right: 2vw;
+            background-color: #ff0000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2vh;
+            padding: 2vh;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: pulse 1s infinite;
+            transition: background-color 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            #chat-btn {
+                font-size: 3vw;
+                padding: 3vw;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        #chat-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="tuscript.js" defer></script>
+</head>
+
+<body>
+    <div id="offline-message" style="display: none; background-color: rgba(0, 0, 0, 0.8); color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999;">
+        <h1>Sin conexión a Internet</h1>
+        <img src="js/no-wifi.png" alt="Imagen de conexión perdida" style="width: 100px; height: auto;">
+    </div>
+
+    <video autoplay muted loop id="video-background" preload="auto">
+        <source src="js/Fondo6.mp4" type="video/mp4">
+        Tu navegador no soporta el elemento de video.
+    </video>
+    
+    <div id="reloj"></div>
+
+    <div id="lunaradio"></div>
+
+    <div id="notification" style="display: none;">
+        <p>¡Estás escuchando La Rielera!</p>
+    </div>
+    
+    <!-- Botones flotantes -->
+    <div id="chat-btn">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <div id="comment-btn">
+        <i class="fas fa-bullhorn"></i>
+    </div>
+
+    <div id="info-btn">
+        <i class="fas fa-info-circle"></i>
+    </div>
+
+    <div id="contact-btn">
+        <i class="fas fa-envelope"></i>
+    </div>
+    
+    <div id="imagen-esquina">
+        <img src="js/uttlogo.png" alt="Imagen Esquina">
+    </div>
+
+    <!-- Modales -->
+    <div id="chat-modal">
+        <div class="modal-close-btn" onclick="closeChatModal()">&times;</div>
+        <div id="chat-container">
+            <h2>Chat en Vivo 💬</h2>
+            <div id="chat-messages"></div>
+            
+            <div id="chat-input-container">
+                <div class="emoji-picker" id="emojiPicker">
+                    <span>😀</span><span>😂</span><span>😍</span><span>😎</span><span>😭</span>
+                    <span>👍</span><span>🔥</span><span>❤️</span><span>🎉</span><span>😜</span>
+                    <span>💀</span><span>🌹</span><span>🍒</span><span>🍕</span><span>⚽</span>
+                    <span>⚾</span><span>🌎</span><span>🌑</span><span>🚌</span><span>👓</span>   
+                </div>
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje...">
+                <button class="emoji-button" id="emojiButton">😊</button>
+                <button id="send-chat-btn" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="comment-modal">
+        <span class="modal-close-btn" onclick="closeComments()">&times;</span>
+        <h2>Anuncios 📣</h2>
+        <div id="ad-images">
+            <img src="js/publicidad-online.png" alt="h" width="400" height="340" style="border-radius: 20px;">
+        </div>
+        <div id="comments-container"></div>
+    </div>
+
+    <div id="info-modal">
+        <span class="modal-close-btn" onclick="closeInfo()">&times;</span>
+        <h2>Información ℹ️</h2>
+        <div id="info-container">
+            <a>¡Bienvenido la Rielera 98.9</a>
+            <p>Tu estación de radio en línea que recorre los caminos del sonido como un tren imparable. Aquí encontrarás música que mueve el alma, palabras que dejan huella y una comunidad que vibra al mismo ritmo.
+                Sube el volumen, acomódate y déjate llevar... ¡El viaje apenas comienza! </p>
+            <img src="js/radio.png" alt="" style="width: 100%; max-width: 80px; display: block; margin: 0 auto;">
+            <hr></hr>
+            <h2>Nuestra programación:</h2>
+            <p>En La Rielera encontrarás variedad: desde música que despierta emociones hasta programas que invitan a reflexionar, reír o simplemente acompañarte.</p>
+            <img src="js/tren-de-juguete.png" alt="" style="width: 100%; max-width: 80px; display: block; margin: 0 auto;">
+            <hr></hr>
+            <p>®Zorb FM - Productora de Medios Digitales</p>
+            <img src="js/uttlogo2.png" alt="" style="width: 20%; max-width: 60px; display: block; margin: 0 auto;">
+            <hr></hr>
+            <a class="social-btn" href="https://api.whatsapp.com/send/?phone=2411179924&text&type=phone_number&app_absent=0" target="_blank"><i class="fab fa-whatsapp"></i> Whatsapp</a>
+        </div>
+    </div>
+
+    <div id="contact-modal">
+        <span class="modal-close-btn" onclick="closeContact()">&times;</span>
+        <h2>Contacto 📧</h2>
+        <div id="contact-container">
+            <a class="social-btn" href="mailto:larielera98.9@gmail.com" target="_blank"><i class="fas fa-envelope"></i> Correo Electrónico</a>
+            <a class="social-btn" href="https://wa.me/2411472294" target="_blank"><i class="fab fa-whatsapp"></i> Teléfono</a>
+            <a class="social-btn" href="https://www.facebook.com/share/1DXXLkH4Ww/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+            <img src="js/libreta-de-contactos.png" alt="" style="width: 100%; max-width: 80px; display: block; margin: 0 auto;">
+        </div>
+       
+    <!-- Scripts -->
+    <script src="./script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="js/lunaradio-sincors.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        function actualizarReloj() {
+            const reloj = document.getElementById('reloj');
+            const ahora = new Date();
+    
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const año = ahora.getFullYear();
+    
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    
+            const fecha = `${dia}/${mes}/${año}`;
+            const hora = `${horas}:${minutos}:${segundos}`;
+    
+            reloj.innerHTML = `
+                <div class="reloj-fecha">${fecha}</div>
+                <div class="reloj-hora">${hora}</div>
+            `;
+        }
+    
+        setInterval(actualizarReloj, 1000);
+        actualizarReloj();
+    </script>
+    
+    <script>
+        // Verificar si el navegador soporta notificaciones
+        if ('Notification' in window) {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    function showNotification() {
+                        const notificationOptions = {
+                            body: '¡Estás escuchando La Rielera.!',
+                            icon: 'js/tren-de-juguete.png',
+                            badge: 'js/tren-de-juguete.png',
+                        };
+                        new Notification(' La Rielera', notificationOptions);
+                    }
+                    
+                    showNotification();
+                    setInterval(showNotification, 600000);
+                }
+            });
+        }
+
+        // Cambio de imágenes en anuncios
+        var currentIndex = 0;
+        var images = document.querySelectorAll('#ad-images img');
+        var totalImages = images.length;
+    
+        function showImage(index) {
+            images.forEach(img => img.style.display = 'none');
+            images[index].style.display = 'block';
+        }
+    
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % totalImages;
+            showImage(currentIndex);
+        }
+    
+        setInterval(nextImage, 5000);
+
+        // Verificar estado de conexión
+        function checkOnlineStatus() {
+            var offlineMessage = document.getElementById("offline-message");
+            if (!navigator.onLine) {
+                offlineMessage.style.display = "flex";
+            } else {
+                offlineMessage.style.display = "none";
+            }
+        }
+
+        window.addEventListener("load", function() {
+            checkOnlineStatus();
+
+            window.addEventListener("online", function() {
+                checkOnlineStatus();
+            });
+
+            window.addEventListener("offline", function() {
+                checkOnlineStatus();
+            });
+        });
+
+        // Configuración del reproductor de radio
+        $("#lunaradio").lunaradio({ 
+            userinterface: "big",
+            backgroundcolor: "",
+            fontcolor: "#0a41f5",
+            hightlightcolor: "#FF0000",
+            fontname: "GROBOLD",
+            googlefont: "Anton&display=swap",
+            fontratio: "0.4",
+            radioname: " La Rielera ",
+            scroll: "true",
+            coverimage: "js/la.jpg",
+            onlycoverimage: "False",
+            coverstyle: "animated",
+            usevisualizer: "real",
+            visualizertype: "1",
+            metadatatechnic: "",
+            ownmetadataurl: "",
+            streamurl: "https://stream.zeno.fm/4e68b4cw24zuv",
+            streamtype: "radiozeno",
+            icecastmountpoint: "",
+            shoutcastpath: "/stream",
+            shoutcastid: "1",
+            streamsuffix: "",
+            radionomyid: "",
+            radionomyapikey: "",
+            radiojarid: "",
+            radiocoid: "",
+            itunestoken: "1000lIPN",
+            metadatainterval: "15000",
+            volume: "50",
+            debug: "false",
+            autoplay: "true"
+        });
+
+        // Eventos de los botones
+        $("#comment-btn").click(function () {
+            $("#comment-modal").addClass("show");
+            loadComments();
+        });
+
+        $("#info-btn").click(function () {
+            $("#info-modal").addClass("show");
+        });
+
+        $("#contact-btn").click(function () {
+            $("#contact-modal").addClass("show");
+        });
+
+        $(".modal-close-btn").click(function () {
+            $(".modal").removeClass("show");
+        });
+
+        function closeComments() {
+            $("#comment-modal").removeClass("show");
+        }
+
+        function closeInfo() {
+            $("#info-modal").removeClass("show");
+        }
+
+        function closeContact() {
+            $("#contact-modal").removeClass("show");
+        }
+
+        function sendMessage() {
+            alert("Mensaje enviado");
+            closeContact();
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
