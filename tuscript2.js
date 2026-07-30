@@ -234,26 +234,27 @@ console.log('💡 Escribe "testNotification()" en consola para probar');
 })();
 
 // ==========================================
-// RELOJ DIGITAL CON FECHA Y HORA
+// RELOJ DIGITAL 12 HORAS (SIN SEGUNDOS)
 // ==========================================
 function updateClock() {
     const now = new Date();
     
-    // Hora
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    // Obtener hora en formato 12 horas
+    let hours = now.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
     
-    // Actualizar elementos individuales
-    document.getElementById('clockHours').textContent = hours;
-    document.getElementById('clockMinutes').textContent = minutes;
-    document.getElementById('clockSeconds').textContent = seconds;
+    // Convertir a formato 12 horas
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 12 en lugar de 0
     
-    // Actualizar data-text para el efecto de neón
-    const timeElement = document.querySelector('.clock-time');
-    if (timeElement) {
-        timeElement.setAttribute('data-text', `${hours}:${minutes}:${seconds}`);
-    }
+    // Formatear con 2 dígitos
+    const hoursStr = String(hours).padStart(2, '0');
+    const minutesStr = String(now.getMinutes()).padStart(2, '0');
+    
+    // Actualizar elementos
+    document.getElementById('clockHours').textContent = hoursStr;
+    document.getElementById('clockMinutes').textContent = minutesStr;
+    document.getElementById('clockAmPm').textContent = ampm;
     
     // Fecha
     const day = String(now.getDate()).padStart(2, '0');
@@ -262,9 +263,9 @@ function updateClock() {
     document.getElementById('clockDate').textContent = `${day}/${month}/${year}`;
 }
 
-// Actualizar cada segundo
+// Actualizar cada minuto (no cada segundo)
 updateClock();
-setInterval(updateClock, 1000);
+setInterval(updateClock, 60000);
 
 // ==========================================
 // VERIFICAR CONEXIÓN A INTERNET
