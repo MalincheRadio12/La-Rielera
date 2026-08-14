@@ -8,6 +8,9 @@
   "theme_color": "#d004db",
   "scope": "/",
   "lang": "es-MX",
+  "id": "la-rielera-radio",
+  "orientation": "portrait",
+  "categories": ["music", "entertainment"],
   "icons": [
     {
       "src": "js/1.png",
